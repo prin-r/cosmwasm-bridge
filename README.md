@@ -1,0 +1,1 @@
+# Cosmwasm Bridge Contract
