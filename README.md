@@ -20,7 +20,7 @@
 ## Contract Handle Messages
 ### `UpdateValidatorsPower`
 Update the voting power of provided validators. Return error if message sender is not the contract owner.
-```json
+```
 {
   "update_validators_power": {
     "validators": [
@@ -36,7 +36,7 @@ Update the voting power of provided validators. Return error if message sender i
 
 ### `RelayCandidateBlock`
 Relay a candidate block to the contract. A candidate block will get relayed if the total voting power of its appended signature exceeds two-thirds of the total voting power of all validators. Each candidate block is referenced by its block height and the message sender.
-```json
+```
 {
   "relay_candidate_block": {
     "data": <string>
@@ -50,7 +50,7 @@ Where data string is the OBI-encoded data in the following format:
 
 ### `AppendSignature`
 Append the block signatures to the specified candidate block.
-```json
+```
 {
   "append_signature": {
     "data": <string>
@@ -64,7 +64,7 @@ Where data string is the OBI-encoded data in the following format:
 
 ### `VerifyAndSaveResult`
 Verify the provided result with the relayed block information in the contract state. Save the verified result to the contract state.
-```json
+```
 {
   "verify_and_save_result": {
     "data": <string>
@@ -78,7 +78,7 @@ Where data string is the OBI-encoded data in the following format:
 
 ### `RemoveCandidateBlock`
 Remove a candidate block from the contract state. Return error if the message sender is not the owner of the specified candidate block.
-```json
+```
 {
   "remove_candidate_block": {
     "block_height": <block-height>
@@ -89,7 +89,7 @@ Remove a candidate block from the contract state. Return error if the message se
 ## Contract Query Messages
 ### `GetValidatorPower`
 Get the voting power of the provided validator.
-```json
+```
 {
   "get_validator_power": {
     "validator": <base64-encoded address>
@@ -99,7 +99,7 @@ Get the voting power of the provided validator.
 
 ### `GetResult`
 Get the verified result of the specified request id.
-```json
+```
 {
   "get_result": {
     "request_id": <request-id>
