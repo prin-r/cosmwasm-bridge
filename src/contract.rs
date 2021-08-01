@@ -57,7 +57,7 @@ pub fn try_update_validators_power<S: Storage, A: Api, Q: Querier>(
     if owner_read(&deps.storage).load().unwrap() != deps.api.canonical_address(&env.message.sender).unwrap() {
         return Err(StdError::unauthorized());
     }
-    let mut total_validator_power_state = total_validator_power(&mut deps.storage).load().unwrap();
+    let mut total_validator_power_state = total_validator_power_read(&deps.storage).load().unwrap();
     let mut validators_power_state = validators_power(&mut deps.storage);
     for idx in 0usize..validators.len() {
         let validator = &validators[idx];
@@ -69,6 +69,7 @@ pub fn try_update_validators_power<S: Storage, A: Api, Q: Querier>(
         validators_power_state.set(validator.addr.as_slice(), validator.power.to_string().as_bytes());
         total_validator_power_state += validator.power;
     }
+    total_validator_power(&mut deps.storage).save(&total_validator_power_state)?;
     total_validator_power_last_updated(&mut deps.storage).save(&block_height)?;
     Ok(HandleResponse::default())
 }
