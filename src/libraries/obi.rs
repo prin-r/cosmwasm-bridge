@@ -46,11 +46,12 @@ mod test {
     fn encode_test() {
         let candidate_block_input = RelayCandidateBlockInput {
             multi_store: multi_store::Data {
-                auth_to_ibc_transfer_stores_merkle_hash: HexDecode("39C31D3089788079E26877A8B51640BE0FCCD391833D45845DB4D3D070ADB1E4").unwrap(),
-                mint_store_merkle_hash: HexDecode("41F12E6F654E927F4476EFE9C710AA5A3F1B4ADF59E8899A34DB578BDB1198D0").unwrap(),
-                oracle_iavl_state_hash: HexDecode("99DAD04860A6B4E777A6BFA60E75DC11CAE48935556D570A7C625E5DE52D4F8A").unwrap(),
-                params_to_slash_stores_merkle_hash: HexDecode("B18B165A5CA95FA274D3B79BE5CA950146D837B8760C65563E58B1A4B4D4C93E").unwrap(),
-                staking_to_upgrade_stores_merkle_hash: HexDecode("CA0A44D7055DB7EF4DFCE1AAEC3599C1823945ACAA1F91CAE53239C07DE00D62").unwrap(),
+                auth_to_fee_grant_stores_merkle_hash: HexDecode("ACAA6420A7BB88830093A913CD39C304CACE64F2A40466CF8D08061D9B8F2485").unwrap(),
+                gov_to_ibc_core_stores_merkle_hash: HexDecode("3DF354440200A45608BA6A42C7243FB0289C9E8ACF9A13F1ED27759AD0EAF404").unwrap(),
+                mint_store_merkle_hash: HexDecode("06A9D989A4403F45DD2E053492260CC415C557009351850A607C8E7BAA17B0B7").unwrap(),
+                oracle_iavl_state_hash: HexDecode("CB45442287E8D3662215D6ED9C1E183CB5459DB06C8855464393A005427A37D5").unwrap(),
+                params_to_transfer_stores_merkle_hash: HexDecode("9A45D781D25741C42861701E1ACE5F198D4605451245C9ABC4A0E8F3D479340F").unwrap(),
+                upgrade_store_merkle_hash: HexDecode("C9C8849ED125CC7681329C4D27B83B1FC8ACF7A865C9D1D1DF575CCA56F48DBE").unwrap(),
             },
             merkle_paths: block_header_merkle_path::Data {
                 version_and_chain_id_hash: HexDecode("B25BE38E9445DF8411DE844C4980F1B452738BFC815BF71F49A378D3B00FF1C1").unwrap(),

@@ -8,29 +8,34 @@ use crate::libraries::utils;
 
 // MultiStoreProof stores a compact of other Cosmos-SDK modules' storage hash in multistore to
 // compute (in combination with oracle store hash) Tendermint's application state hash at a given block.
-//                         ________________[AppHash]_______________
+//                                              ________________[AppHash]_________________
+//                                             /                                          \
+//                         _________________[I14]_________________                        [G]
 //                        /                                        \
-//             _______[I10]______                          _______[I11]________
+//             _______[I12]______                          _______[I13]________
 //            /                  \                        /                    \
-//       __[I6]__             __[I7]__                __[I8]__              __[I9]__
-//      /         \          /         \            /          \           /         \
-//    [I0]       [I1]     [I2]        [I3]        [I4]        [I5]       [C]         [D]
-//   /   \      /   \    /    \      /    \      /    \      /    \
-// [0]   [1]  [2]   [3] [4]   [5]  [6]    [7]  [8]    [9]  [A]    [B]
-// [0] - auth   [1] - bank     [2] - capability  [3] - dist    [4] - evidence
-// [5] - gov    [6] - ibchost  [7] - ibctransfer [8] - mint    [9] - oracle
-// [A] - params [B] - slashing [C] - staking     [D] - upgrade
+//       __[I8]__             __[I9]__                __[I10]__              __[I11]__
+//      /         \          /         \            /          \            /         \
+//    [I0]       [I1]     [I2]        [I3]        [I4]        [I5]        [I6]       [I7]
+//   /   \      /   \    /    \      /    \      /    \      /    \      /    \     /    \
+// [0]   [1]  [2]   [3] [4]   [5]  [6]    [7]  [8]    [9]  [A]    [B]  [C]    [D]  [E]   [F]
+//
+// [0] - auth     [1] - authz    [2] - bank    [3] - capability [4] - crisis  [5] - dist
+// [6] - evidence [7] - feegrant [8] - gov     [9] - ibccore    [A] - mint    [B] - oracle
+// [C] - params   [D] - slashing [E] - staking [F] - transfer   [G] - upgrade
+//
 // Notice that NOT all leaves of the Merkle tree are needed in order to compute the Merkle
-// root hash, since we only want to validate the correctness of [9] In fact, only
-// [8], [I5], [I9], and [I10] are needed in order to compute [AppHash].
+// root hash, since we only want to validate the correctness of [B] In fact, only
+// [A], [I4], [I11], [I12], and [G] are needed in order to compute [AppHash].
 
 #[derive(Serialize, Deserialize, Clone, Debug, PartialEq, JsonSchema, OBIDecode, OBISchema, OBIEncode)]
 pub struct Data {
-    pub auth_to_ibc_transfer_stores_merkle_hash: Vec<u8>, // [I10]
-    pub mint_store_merkle_hash: Vec<u8>, // [8]
-    pub oracle_iavl_state_hash: Vec<u8>, // [9]
-    pub params_to_slash_stores_merkle_hash: Vec<u8>, // [I5]
-    pub staking_to_upgrade_stores_merkle_hash: Vec<u8>, // [I9]
+    pub auth_to_fee_grant_stores_merkle_hash: Vec<u8>, // [I12]
+    pub gov_to_ibc_core_stores_merkle_hash: Vec<u8>, // [I4]
+    pub mint_store_merkle_hash: Vec<u8>, // [A]
+    pub oracle_iavl_state_hash: Vec<u8>, // [B]
+    pub params_to_transfer_stores_merkle_hash: Vec<u8>, // [I11]
+    pub upgrade_store_merkle_hash: Vec<u8>, // [G]
 }
 
 impl Data {
@@ -40,19 +45,22 @@ impl Data {
         let hashed_oracle_iavl_state_hash = &hasher.finalize()[..];
 
         return utils::merkle_inner_hash( // [AppHash]
-            self.auth_to_ibc_transfer_stores_merkle_hash, // [I10]
-            utils::merkle_inner_hash( // [I11]
-                utils::merkle_inner_hash( // [I8]
-                    utils::merkle_inner_hash( // [I4]
-                        self.mint_store_merkle_hash, // [8]
-                        utils::merkle_leaf_hash( // [9]
-                            [decode("066f7261636c6520").unwrap().as_slice(), hashed_oracle_iavl_state_hash].concat()
-                        )
+            utils::merkle_inner_hash( // [I14]
+                self.auth_to_fee_grant_stores_merkle_hash, // [I12]
+                utils::merkle_inner_hash( // [I13]
+                    utils::merkle_inner_hash( // [I10]
+                        self.gov_to_ibc_core_stores_merkle_hash, // [I4]
+                        utils::merkle_inner_hash( // [I5]
+                            self.mint_store_merkle_hash, // [A]
+                            utils::merkle_leaf_hash( // [B]
+                                [decode("066f7261636c6520").unwrap().as_slice(), hashed_oracle_iavl_state_hash].concat()
+                            )
+                        ),
                     ),
-                    self.params_to_slash_stores_merkle_hash // [I5]
-                ),
-                self.staking_to_upgrade_stores_merkle_hash // [I9]
-            )
+                    self.params_to_transfer_stores_merkle_hash // [I11]
+                )
+            ),
+            self.upgrade_store_merkle_hash, // [G]
         );
     }
 }
@@ -63,14 +71,28 @@ mod tests {
 
     #[test]
     fn get_app_hash_test() {
+        // sample 1
         let data = Data {
-            auth_to_ibc_transfer_stores_merkle_hash: decode("7FA9321529B99458C89F4B1B1626B2C2C04C41EB0E47FCBD2FBA7EA78B9D65D7").unwrap(),
-            mint_store_merkle_hash: decode("AE7F0418BCE8C09D2C33B981A6EA261BA330C75D88DC1637A452BCC65C5AE8C1").unwrap(),
-            oracle_iavl_state_hash: decode("98FCDC7C08F480BE7A8268A07B8635333D902847EC0EA5606F33D43A2E936C0E").unwrap(),
-            params_to_slash_stores_merkle_hash: decode("E0004F2B2DDAB5F19E2027F8CDE6CBE7FC2A0B7BFA2EF48BB614F8591113CBF0").unwrap(),
-            staking_to_upgrade_stores_merkle_hash: decode("EF14C7E1F5EDCD25AB616E394B6ED8961F66ED2BC363607B50FCF3BA2760C6F8").unwrap(),
+            auth_to_fee_grant_stores_merkle_hash: decode("ACAA6420A7BB88830093A913CD39C304CACE64F2A40466CF8D08061D9B8F2485").unwrap(),
+            gov_to_ibc_core_stores_merkle_hash: decode("3DF354440200A45608BA6A42C7243FB0289C9E8ACF9A13F1ED27759AD0EAF404").unwrap(),
+            mint_store_merkle_hash: decode("06A9D989A4403F45DD2E053492260CC415C557009351850A607C8E7BAA17B0B7").unwrap(),
+            oracle_iavl_state_hash: decode("CB45442287E8D3662215D6ED9C1E183CB5459DB06C8855464393A005427A37D5").unwrap(),
+            params_to_transfer_stores_merkle_hash: decode("9A45D781D25741C42861701E1ACE5F198D4605451245C9ABC4A0E8F3D479340F").unwrap(),
+            upgrade_store_merkle_hash: decode("C9C8849ED125CC7681329C4D27B83B1FC8ACF7A865C9D1D1DF575CCA56F48DBE").unwrap(),
         };
         let result = data.get_app_hash();
-        assert_eq!(result, decode("E500B3DD21816EE04BE5E77271EC0D8286B8AFF81EF96344FED74B52992E6D23").unwrap())
+        assert_eq!(result, decode("0F4BF1298EDCEBC9AA2FF71BE9B3B70DD2200A12B903C94AB25A24CED2C67594").unwrap());
+
+        // sample 2
+        let data = Data {
+            auth_to_fee_grant_stores_merkle_hash: decode("73FC154E0899059AFBC726D9BE23DE62739F198766503AEBBFA0119102E60831").unwrap(),
+            gov_to_ibc_core_stores_merkle_hash: decode("FC61602EB36FE43248BEA691FF355059FE822404EC7846FB08ADE42283125B17").unwrap(),
+            mint_store_merkle_hash: decode("9135F6A9A97C7B35D910A375F10DE1F3DBA7838C2DDAEAA01858D119D93A21B1").unwrap(),
+            oracle_iavl_state_hash: decode("B5D3A6DD3EA412C4762495BCB8085F7A7E0FA1A1888EF60329732813C508AD90").unwrap(),
+            params_to_transfer_stores_merkle_hash: decode("FEFECEF499539DC6F08AB7FD1ADB35B998C24ECCBD034BE4B03100FD54357513").unwrap(),
+            upgrade_store_merkle_hash: decode("C9C8849ED125CC7681329C4D27B83B1FC8ACF7A865C9D1D1DF575CCA56F48DBE").unwrap(),
+        };
+        let result = data.get_app_hash();
+        assert_eq!(result, decode("99A8E473585C107BD8080DFCB220A2905E930120D6A7E1BDBE7A3F18BA57D109").unwrap());
     }
 }
