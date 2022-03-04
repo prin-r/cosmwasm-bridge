@@ -1,17 +1,18 @@
 use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
-use cosmwasm_std::{CanonicalAddr, Uint128};
-
-use crate::libraries::result_codec::Result;
+use cosmwasm_std::{CanonicalAddr, Addr};
+use crate::struct_types::ValidatorWithPower;
+use crate::libraries::{iavl_merkle_path, result_codec, tm_signature};
 
 #[derive(Serialize, Deserialize, Clone, Debug, PartialEq, JsonSchema)]
-pub struct InitMsg {
+pub struct InstantiateMsg {
     pub validators: Vec<ValidatorWithPower>,
 }
 
 #[derive(Serialize, Deserialize, Clone, Debug, PartialEq, JsonSchema)]
 #[serde(rename_all = "snake_case")]
-pub enum HandleMsg {
+pub enum ExecuteMsg {
+    TransferOwnership { new_owner: Addr },
     UpdateValidatorsPower { block_height: u64, validators: Vec<ValidatorWithPower> },
     RelayCandidateBlock { data: String },
     AppendSignature { data: String },
@@ -22,22 +23,18 @@ pub enum HandleMsg {
 #[derive(Serialize, Deserialize, Clone, Debug, PartialEq, JsonSchema)]
 #[serde(rename_all = "snake_case")]
 pub enum QueryMsg {
+    Owner {},
+    GetTotalVotingPower {},
+    GetRecoverSigner {
+        block_hash: Vec<u8>,
+        signature_data: tm_signature::Data,
+    },
+    GetVerifyOracleData {
+        oracle_state_root: Vec<u8>,
+        result: result_codec::Result,
+        version: u64,
+        merkle_paths: Vec<iavl_merkle_path::Data>
+    },
     GetValidatorPower { validator: CanonicalAddr },
     GetResult { request_id: u64 },
-}
-
-#[derive(Serialize, Deserialize, Clone, Debug, PartialEq, JsonSchema)]
-pub struct ValidatorWithPower {
-    pub addr: CanonicalAddr,
-    pub power: Uint128,
-}
-
-#[derive(Serialize, Deserialize, Clone, Debug, PartialEq, JsonSchema)]
-pub struct VerifyOracleDataResponse {
-    pub result: Result,
-}
-
-#[derive(Serialize, Deserialize, Clone, Debug, PartialEq, JsonSchema)]
-pub struct GetValidatorPowerResponse {
-    pub power: Uint128,
 }
