@@ -1,7 +1,6 @@
 [package]
 name = "cosmwasm-bridge"
 version = "0.1.0"
-authors = ["traviolus <david.tumcharoen@gmail.com>"]
 edition = "2018"
 
 exclude = [

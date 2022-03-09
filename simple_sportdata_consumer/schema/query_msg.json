@@ -1,0 +1,278 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "QueryMsg",
+  "oneOf": [
+    {
+      "type": "object",
+      "required": [
+        "owner"
+      ],
+      "properties": {
+        "owner": {
+          "type": "object"
+        }
+      },
+      "additionalProperties": false
+    },
+    {
+      "type": "object",
+      "required": [
+        "get_total_voting_power"
+      ],
+      "properties": {
+        "get_total_voting_power": {
+          "type": "object"
+        }
+      },
+      "additionalProperties": false
+    },
+    {
+      "type": "object",
+      "required": [
+        "get_recover_signer"
+      ],
+      "properties": {
+        "get_recover_signer": {
+          "type": "object",
+          "required": [
+            "block_hash",
+            "signature_data"
+          ],
+          "properties": {
+            "block_hash": {
+              "type": "array",
+              "items": {
+                "type": "integer",
+                "format": "uint8",
+                "minimum": 0.0
+              }
+            },
+            "signature_data": {
+              "$ref": "#/definitions/Data"
+            }
+          }
+        }
+      },
+      "additionalProperties": false
+    },
+    {
+      "type": "object",
+      "required": [
+        "get_verify_oracle_data"
+      ],
+      "properties": {
+        "get_verify_oracle_data": {
+          "type": "object",
+          "required": [
+            "merkle_paths",
+            "oracle_state_root",
+            "result",
+            "version"
+          ],
+          "properties": {
+            "merkle_paths": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/Data"
+              }
+            },
+            "oracle_state_root": {
+              "type": "array",
+              "items": {
+                "type": "integer",
+                "format": "uint8",
+                "minimum": 0.0
+              }
+            },
+            "result": {
+              "$ref": "#/definitions/Result"
+            },
+            "version": {
+              "type": "integer",
+              "format": "uint64",
+              "minimum": 0.0
+            }
+          }
+        }
+      },
+      "additionalProperties": false
+    },
+    {
+      "type": "object",
+      "required": [
+        "get_validator_power"
+      ],
+      "properties": {
+        "get_validator_power": {
+          "type": "object",
+          "required": [
+            "validator"
+          ],
+          "properties": {
+            "validator": {
+              "$ref": "#/definitions/CanonicalAddr"
+            }
+          }
+        }
+      },
+      "additionalProperties": false
+    },
+    {
+      "type": "object",
+      "required": [
+        "get_result"
+      ],
+      "properties": {
+        "get_result": {
+          "type": "object",
+          "required": [
+            "request_id"
+          ],
+          "properties": {
+            "request_id": {
+              "type": "integer",
+              "format": "uint64",
+              "minimum": 0.0
+            }
+          }
+        }
+      },
+      "additionalProperties": false
+    }
+  ],
+  "definitions": {
+    "Binary": {
+      "description": "Binary is a wrapper around Vec<u8> to add base64 de/serialization with serde. It also adds some helper methods to help encode inline.\n\nThis is only needed as serde-json-{core,wasm} has a horrible encoding for Vec<u8>",
+      "type": "string"
+    },
+    "CanonicalAddr": {
+      "$ref": "#/definitions/Binary"
+    },
+    "Data": {
+      "type": "object",
+      "required": [
+        "r",
+        "s",
+        "signed_data_prefix",
+        "signed_data_suffix",
+        "v"
+      ],
+      "properties": {
+        "r": {
+          "type": "array",
+          "items": {
+            "type": "integer",
+            "format": "uint8",
+            "minimum": 0.0
+          }
+        },
+        "s": {
+          "type": "array",
+          "items": {
+            "type": "integer",
+            "format": "uint8",
+            "minimum": 0.0
+          }
+        },
+        "signed_data_prefix": {
+          "type": "array",
+          "items": {
+            "type": "integer",
+            "format": "uint8",
+            "minimum": 0.0
+          }
+        },
+        "signed_data_suffix": {
+          "type": "array",
+          "items": {
+            "type": "integer",
+            "format": "uint8",
+            "minimum": 0.0
+          }
+        },
+        "v": {
+          "type": "integer",
+          "format": "uint8",
+          "minimum": 0.0
+        }
+      }
+    },
+    "Result": {
+      "type": "object",
+      "required": [
+        "ans_count",
+        "ask_count",
+        "client_id",
+        "min_count",
+        "oracle_script_id",
+        "params",
+        "request_id",
+        "request_time",
+        "resolve_status",
+        "resolve_time",
+        "result"
+      ],
+      "properties": {
+        "ans_count": {
+          "type": "integer",
+          "format": "uint64",
+          "minimum": 0.0
+        },
+        "ask_count": {
+          "type": "integer",
+          "format": "uint64",
+          "minimum": 0.0
+        },
+        "client_id": {
+          "type": "string"
+        },
+        "min_count": {
+          "type": "integer",
+          "format": "uint64",
+          "minimum": 0.0
+        },
+        "oracle_script_id": {
+          "type": "integer",
+          "format": "uint64",
+          "minimum": 0.0
+        },
+        "params": {
+          "type": "array",
+          "items": {
+            "type": "integer",
+            "format": "uint8",
+            "minimum": 0.0
+          }
+        },
+        "request_id": {
+          "type": "integer",
+          "format": "uint64",
+          "minimum": 0.0
+        },
+        "request_time": {
+          "type": "integer",
+          "format": "uint64",
+          "minimum": 0.0
+        },
+        "resolve_status": {
+          "type": "integer",
+          "format": "uint64",
+          "minimum": 0.0
+        },
+        "resolve_time": {
+          "type": "integer",
+          "format": "uint64",
+          "minimum": 0.0
+        },
+        "result": {
+          "type": "array",
+          "items": {
+            "type": "integer",
+            "format": "uint8",
+            "minimum": 0.0
+          }
+        }
+      }
+    }
+  }
+}

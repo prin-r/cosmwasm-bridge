@@ -1,0 +1,13 @@
+{
+  "name": "example_cosmwasm",
+  "version": "1.0.0",
+  "main": "index.js",
+  "license": "MIT",
+  "dependencies": {
+    "@bandprotocol/bandchain.js": "^2.0.3",
+    "@terra-money/terra.js": "^3.0.8",
+    "axios": "^0.26.1",
+    "buffer": "^6.0.3",
+    "fs": "^0.0.1-security"
+  }
+}
