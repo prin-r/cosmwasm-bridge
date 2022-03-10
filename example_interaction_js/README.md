@@ -14,7 +14,7 @@ This example show how to request yahoo's fantasy sport data from Band using `ban
 Please see [here](index.js#L193-L207)
 
 1. Request data on Bandchain and then get its proof of existence
-2. Relay the data with its proof to Band's bridge contrcat on Terra and then let the consumer contract to consume the data from Band's bridge contract
+2. Relay the data with its proof to Band's bridge contract on Terra and then let the consumer contract to consume the data from Band's bridge contract
 3. Try to read the latest saved result from the consumer contract
 
 ### Installation
