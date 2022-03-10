@@ -16,7 +16,7 @@ const { MsgRequestData } = Message;
 const { PrivateKey } = Wallet;
 
 // terra constants
-const bridgeAddress = "terra14kfq7r56ewrv4pk5fldy23mkg6xd9sq8ujgzcp";
+const bridgeAddress = "terra1l9drxzsmxrlspm73wurxnptsawyrn3s63k7qd4";
 const consumerAddress = "terra1r8yt89e77vdg7jlllazvkav3g2a2vhznusatnl";
 const terraTestMnemonic = "xxx";
 
