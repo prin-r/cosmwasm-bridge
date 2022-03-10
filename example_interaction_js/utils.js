@@ -1,7 +1,15 @@
 const { Obi } = require("@bandprotocol/bandchain.js");
-// const { example_proof } = require("./proof_example.js");
 
 const toArrU8 = (x, t = "hex") => [...Buffer.from(x, t)];
+
+Object.defineProperty(Array.prototype, 'chunk', {
+  value: function(chunkSize) {
+    var R = [];
+    for (var i = 0; i < this.length; i += chunkSize)
+      R.push(this.slice(i, i + chunkSize));
+    return R;
+  }
+});
 
 const encodeRelayCandidateBlockInput = (proof) => {
   const {
@@ -9,7 +17,7 @@ const encodeRelayCandidateBlockInput = (proof) => {
   } = proof;
 
   const relayCandidateBlockObi = new Obi(
-    `{multi_store:{auth_to_ibc_transfer_stores_merkle_hash:[u8],mint_store_merkle_hash:[u8],oracle_iavl_state_hash:[u8],params_to_slash_stores_merkle_hash:[u8],staking_to_upgrade_stores_merkle_hash:[u8]},merkle_paths:{version_and_chain_id_hash:[u8],height:u64,time_second:u64,time_nano_second:u32,last_block_id_and_other:[u8],next_validator_hash_and_consensus_hash:[u8],last_results_hash:[u8],evidence_and_proposer_hash:[u8]}}/{_:u8}`
+    `{multi_store:{auth_to_fee_grant_stores_merkle_hash:[u8],gov_to_ibc_core_stores_merkle_hash:[u8],mint_store_merkle_hash:[u8],oracle_iavl_state_hash:[u8],params_to_transfer_stores_merkle_hash:[u8],upgrade_store_merkle_hash:[u8]},merkle_paths:{version_and_chain_id_hash:[u8],height:u64,time_second:u64,time_nano_second:u32,last_block_id_and_other:[u8],next_validator_hash_and_consensus_hash:[u8],last_results_hash:[u8],evidence_and_proposer_hash:[u8]}}/{_:u8}`
   );
 
   const transfromToObiStruct = {
@@ -50,23 +58,27 @@ const encodeAppendSignatureInput = (proof) => {
     block_relay_proof: { signatures },
   } = proof;
 
-  const appendSignatureInputObi = new Obi(
-    `{block_height:u64,signatures:[{r:[u8],s:[u8],v:u8,signed_data_prefix:[u8],signed_data_suffix:[u8]}]}/{_:u8}`
-  );
+  const chunk_sigs = signatures.chunk(10);
+  const results = [];
+  for (let cs of chunk_sigs) {
+        const appendSignatureInputObi = new Obi(
+            `{block_height:u64,signatures:[{r:[u8],s:[u8],v:u8,signed_data_prefix:[u8],signed_data_suffix:[u8]}]}/{_:u8}`
+        );
 
-  const transfromToObiStruct = {
-    block_height: Number(block_height),
-    signatures: signatures.map((s) =>
-      Object.keys(s).reduce((acc, k) => {
-        acc[k.toLocaleLowerCase()] = k == "v" ? Number(s[k]) : toArrU8(s[k]);
-        return acc;
-      }, {})
-    ),
-  };
+        const transfromToObiStruct = {
+            block_height: Number(block_height),
+            signatures: cs.map((s) =>
+              Object.keys(s).reduce((acc, k) => {
+                acc[k.toLocaleLowerCase()] = k == "v" ? Number(s[k]) : toArrU8(s[k]);
+                return acc;
+              }, {})
+            ),
+        };
 
-  return appendSignatureInputObi
-    .encodeInput(transfromToObiStruct)
-    .toString("hex");
+        results.push(appendSignatureInputObi.encodeInput(transfromToObiStruct).toString("hex"));
+  }
+
+  return results;
 };
 
 const encodeVerifyAndSaveResultInput = (proof) => {
@@ -105,20 +117,8 @@ const encodeVerifyAndSaveResultInput = (proof) => {
     .toString("hex");
 };
 
-const encodeCalldata = (path, keys) => {
-  const calldataObi = new Obi(`{path:string,keys:string}/{value:string}`);
-
-  const transformToObiStruct = {
-    path: path,
-    keys: keys,
-  };
-
-  return calldataObi.encodeInput(transformToObiStruct).toString("hex");
-};
-
 module.exports = {
   encodeRelayCandidateBlockInput,
   encodeAppendSignatureInput,
   encodeVerifyAndSaveResultInput,
-  encodeCalldata,
 };

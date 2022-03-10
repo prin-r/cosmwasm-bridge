@@ -2,7 +2,6 @@ const {
   LCDClient,
   MnemonicKey,
   MsgExecuteContract,
-  StdFee,
 } = require("@terra-money/terra.js");
 const {
   encodeRelayCandidateBlockInput,
@@ -11,26 +10,27 @@ const {
   encodeCalldata,
 } = require("./utils.js");
 const axios = require("axios");
-const { Client, Transaction, Message, Wallet } = require("@bandprotocol/bandchain.js");
+const { Client, Transaction, Message, Wallet, Obi, Coin, Fee } = require("@bandprotocol/bandchain.js");
 const { MsgRequestData } = Message;
 const { PrivateKey } = Wallet;
 
 // terra constants
 const bridgeAddress = "terra1l9drxzsmxrlspm73wurxnptsawyrn3s63k7qd4";
 const consumerAddress = "terra1y6t238vszfgsgsztxmzger3lya8e22fknfjcrd";
-const terraTestMnemonic = "xxx";
+const terraTestMnemonic = process.env.TERRA_MNEMONIC;
 
 // band constants
-const bandchain = new Client("http://rpc-laozi-testnet2.bandchain.org:8080");
-const bandTestMnemonic = "xxx"
+const bandchain = new Client("https://laozi-testnet4.bandchain.org/grpc-web");
+const bandTestMnemonic = process.env.BAND_MNEMONIC;
 
 // gas limit
 const GAS = 2_000_000;
 
 // connect to tequila testnet
 const terra = new LCDClient({
-  URL: "https://tequila-lcd.terra.dev",
-  chainID: "tequila-0004",
+  URL: "https://bombay-lcd.terra.dev",
+  chainID: "bombay-12",
+  gasPrices: { uluna: 0.38 }
 });
 
 const band_requester_privkey = PrivateKey.fromMnemonic(bandTestMnemonic);
@@ -41,9 +41,6 @@ const wallet = terra.wallet(new MnemonicKey({ mnemonic: terraTestMnemonic }));
 
 const sleep = async (ms) => new Promise((r) => setTimeout(r, ms));
 
-console.log("xcxcxcxcxcxcxc")
-process.exit();
-
 const relayAndVerify = async (proof) => {
   const encodedBlockHeader = encodeRelayCandidateBlockInput(proof);
   const encodedSigs = encodeAppendSignatureInput(proof);
@@ -53,9 +50,9 @@ const relayAndVerify = async (proof) => {
   const msg1 = new MsgExecuteContract(wallet.key.accAddress, bridgeAddress, {
     relay_candidate_block: { data: encodedBlockHeader },
   });
-  const msg2 = new MsgExecuteContract(wallet.key.accAddress, bridgeAddress, {
-    append_signature: { data: encodedSigs },
-  });
+  const msg2 = encodedSigs.map( sigs => new MsgExecuteContract(wallet.key.accAddress, bridgeAddress, {
+    append_signature: { data: sigs },
+  }));
   const msg3 = new MsgExecuteContract(wallet.key.accAddress, bridgeAddress, {
     verify_and_save_result: { data: encodeVerifyAndSaveResult },
   });
@@ -64,10 +61,7 @@ const relayAndVerify = async (proof) => {
   });
 
   // sign tx
-  const signedTx = await wallet.createAndSignTx({
-    msgs: [msg1, msg2, msg3, msg4],
-    fee: new StdFee(GAS, { uluna: Math.ceil(GAS * 0.3) }),
-  });
+  const signedTx = await wallet.createAndSignTx({ msgs: [msg1, ...msg2, msg3, msg4], memo: "from example interaction" });
 
   // broadcast tx
   const { txhash } = await terra.tx.broadcastSync(signedTx);
@@ -84,36 +78,51 @@ const requestDataAndGetProof = async () => {
   try {
     const band_account = await bandchain.getAccount(band_requester_address.toAccBech32());
     const chain_id = await bandchain.getChainId();
+    const sender = band_requester_address.toAccBech32();
 
-    // https://laozi-testnet2.cosmoscan.io/oracle-script/50
-    const oracle_script_id = 50;
+    // https://laozi-testnet4.cosmoscan.io/oracle-script/134
+    const oracle_script_id = 134;
 
     // Example calldata
-    const path = "league/223.l.431/players;player_keys=223.p.5479";
-    const keys = "league,1,players,0,player,0,2";
-    const calldata = encodeCalldata(path, keys);
+    const obi = new Obi('{sliced_index_input:i8}/{result:string}');
+    const calldata = obi.encodeInput({ sliced_index_input: 0 });
+
+    let coin = new Coin()
+    coin.setDenom('uband')
+    coin.setAmount('1000000')
+
+    let feeCoin = new Coin();
+    feeCoin.setDenom('uband');
+    feeCoin.setAmount('1000');
 
     console.log('Submitting request to BandChain');
-    const tx = new Transaction()
-        .withMessages(
-            new MsgRequestData(
-              oracle_script_id,
-              Buffer.from(calldata, "hex"),
-              4,
-              3,
-              "from_yahoo_fantasy_example",
-              band_requester_address.toAccBech32(),
-            ).toAny()
-        )
-        .withAccountNum(band_account.accountNumber)
-        .withSequence(band_account.sequence)
-        .withChainId(chain_id)
-        .withGas(1000000)
-        .withMemo("Yahoo fantasy sportsdata bridge example");
 
-    const signDoc = tx.getSignDoc(band_requester_pubkey);
-    const signature = band_requester_privkey.sign(signDoc);
-    const txRawBytes = tx.getTxData(signature, band_requester_pubkey)
+    const requestMessage = new MsgRequestData(
+          oracle_script_id,
+          calldata,
+          4,
+          3,
+          "from_example_interaction_script",
+          sender,
+          [coin],
+          50000,
+          200000,
+    );
+
+    const fee = new Fee()
+    fee.setAmountList([feeCoin])
+    fee.setGasLimit(1000000)
+    const chainId = await bandchain.getChainId()
+    const txn = new Transaction()
+    txn.withMessages(requestMessage)
+    await txn.withSender(bandchain, sender)
+    txn.withChainId(chainId)
+    txn.withFee(fee)
+    txn.withMemo('')
+
+    const signDoc = txn.getSignDoc(band_requester_pubkey)
+    const signature = band_requester_privkey.sign(signDoc)
+    const txRawBytes = txn.getTxData(signature, band_requester_pubkey)
 
     const txResult = await bandchain.sendTxBlockMode(txRawBytes);
     console.log("txHash:", txResult.txhash);
@@ -127,7 +136,7 @@ const requestDataAndGetProof = async () => {
       max_retry--;
       try {
         const result = await axios.get(
-          "https://laozi-testnet2.bandchain.org/oracle/proof/" + requestID
+          "https://laozi-testnet4.bandchain.org/api/oracle/proof/" + requestID
         );
         if (result.status !== 200) {
           await sleep(2000);

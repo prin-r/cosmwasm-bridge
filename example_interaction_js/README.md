@@ -22,6 +22,14 @@ Please see [here](index.js#L193-L207)
 - using node version v14.15.0
 - yarn install
 
+### Export env
+```shell
+export BAND_MNEMONIC="..."
+export TERRA_MNEMONIC="..."
+```
+
+**Make sure that you have funded both accounts on Terra and Band.**
+
 ### Run
 
 - node index.js
@@ -33,25 +41,25 @@ example output
 ```sh
 =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
 Submitting request to BandChain
-txHash: F0F626BB381550F98194312B4500283F3B87D5D39C46565476D4E06B87F74505
-Request ID: 692183
+txHash: 58F9F5D63494F6A56692AFE22B09D3B32CF5F74CFC4FD1ACC41069B281759DFD
+Request ID: 2428361
 {
-  block_height: '931332',
+  block_height: '4216242',
   oracle_data_proof: {
     result: {
-      client_id: 'from_yahoo_fantasy_example',
-      oracle_script_id: '50',
-      calldata: 'AAAAL2xlYWd1ZS8yMjMubC40MzEvcGxheWVycztwbGF5ZXJfa2V5cz0yMjMucC41NDc5AAAAHWxlYWd1ZSwxLHBsYXllcnMsMCxwbGF5ZXIsMCwy',
-      ask_count: '10',
-      min_count: '8',
-      request_id: '692183',
-      ans_count: '10',
-      request_time: '1627036899',
-      resolve_time: '1627036909',
+      client_id: 'from_example_interaction_script',
+      oracle_script_id: '134',
+      calldata: 'AA==',
+      ask_count: '4',
+      min_count: '3',
+      request_id: '2428361',
+      ans_count: '3',
+      request_time: '1646929742',
+      resolve_time: '1646929749',
       resolve_status: 1,
-      result: 'AAAAcHsnbmFtZSc6IHsnYXNjaWlfZmlyc3QnOiAnRHJldycsICdhc2NpaV9sYXN0JzogJ0JyZWVzJywgJ2ZpcnN0JzogJ0RyZXcnLCAnZnVsbCc6ICdEcmV3IEJyZWVzJywgJ2xhc3QnOiAnQnJlZXMnfX0='
+      result: 'AAAA3lt7J2FkZHJlc3MnOiAndGVycmExd3UyNXV1dW14MG5jNmZrNGZjYXFrOG1jeDRkaG54d2NhNTZyYzUnLCAnc2NvcmUnOiA5N30sIHsnYWRkcmVzcyc6ICd0ZXJyYTFmbnZnc3M4dnY4ejg0dW1sYXYwZXkwc21oOTdncmtlZ3hsOXA1cicsICdzY29yZSc6IDgwfSwgeydhZGRyZXNzJzogJ3RlcnJhMWw5ZHJ4enNteHJsc3BtNzN3dXJ4bnB0c2F3eXJuM3M2M2s3cWQ0JywgJ3Njb3JlJzogODR9XQ=='
     },
-    version: '931331',
+    version: '4216241',
     merkle_paths: [
       [Object], [Object], [Object],
       [Object], [Object], [Object],
@@ -59,33 +67,58 @@ Request ID: 692183
       [Object], [Object], [Object],
       [Object], [Object], [Object],
       [Object], [Object], [Object],
-      [Object], [Object]
+      [Object], [Object], [Object],
+      [Object]
     ]
   },
   block_relay_proof: {
     multi_store_proof: {
-      auth_to_ibc_transfer_stores_Merkle_hash: 'B3FD5855F6DC54ABBF1D09233AAA7BBFC2B375942F81DA3900CFADC92CCB9A29',
-      mint_store_merkle_hash: 'F588D9F0D8DF6E14973266EA66D954DC450CE9178740BDA1355610793164FEA9',
-      oracle_iavl_State_hash: '0A298E02B77D5B1071705D1C705BAF4BB06A852074A30C7BA83C3029501CBFC4',
-      params_to_slash_stores_merkle_hash: '57C77939CFE45E6D8B830745DE3E74C2FE189DEFA96EFAF66108F88C98566A85',
-      staking_to_upgrade_stores_merkle_hash: 'FA8A461F575BFFE42C157C3966189FC4987BCF4C8D614D741BB36A0F5E311FF7'
+      auth_to_fee_grant_stores_Merkle_hash: '8E4E61A76DB3F3096E05BD51516C85879E85F7C897DA572BAC411876352303C5',
+      gov_to_ibc_core_stores_merkle_hash: 'B19FE73872969762F33466170053252FF0D1D465E16FADD2194A767BD0381197',
+      mint_store_merkle_hash: '78DF288F2F7969887E3C1D0950E7EA3EBFCA612CB70FFBAEEAACF79D3A8A5687',
+      oracle_iavl_State_hash: '9E59AE271A401AE5DFE6D0BF5EB11EF029116B67EDE6DC344D7A90124D150304',
+      params_to_transfer_stores_merkle_hash: '7D34BB7BF5E5BE821DF81BBC831F48F634480F91150C3A30D760A17F7AEB9DB2',
+      upgrade_store_merkle_hash: 'C9C8849ED125CC7681329C4D27B83B1FC8ACF7A865C9D1D1DF575CCA56F48DBE'
     },
     block_header_merkle_parts: {
-      version_and_chain_id_hash: 'B25BE38E9445DF8411DE844C4980F1B452738BFC815BF71F49A378D3B00FF1C1',
-      height: '931332',
-      time_second: '1627036911',
-      time_nano_second: 761733185,
-      last_block_id_and_other: 'CC1EE193E90FF182D1BA50DA1C2113FF65B5DC04C2C767D374B95BDB7FA859B3',
-      next_validator_hash_and_consensus_hash: '4A511899C67C89604A654832B79FAD2B2DAA53B94CCBCE2C090CD9BF6CBFD4E2',
-      last_results_hash: 'E3CD64D1E8A0657830DC6EB07DCAE1A17CA435FF1028811CA55C2CBCDE403E4A',
-      evidence_and_proposer_hash: '0CBAD0DD17B60213621A85D58B58231997C19E43D5D4A2D5CBE8A33CD5D6ADC8'
+      version_and_chain_id_hash: '4ED83077DFC5CDA908ED4C2F2A4246511C5DD48E1B480D59A6AC4C72A670A646',
+      height: '4216242',
+      time_second: '1646929753',
+      time_nano_second: 777168707,
+      last_block_id_and_other: '3B75A88A5FC8E0D7B5D3C3E28A3CE373F7AFBFA1F6E248893CE0A9EF6D55CF69',
+      next_validator_hash_and_consensus_hash: 'CF2EFD4F60774153934A256788B66F27E7D318483EF7A53792DB87B73C0094AD',
+      last_results_hash: '5494E2774AA081A42882671195CD6BE4240A832127E87604A2A67EFF2089B7E0',
+      evidence_and_proposer_hash: '3AC24791F48DDEECEF095E3E41017B6E13609E9096550712F2EE20E381D5A16D'
     },
-    signatures: [ [Object], [Object], [Object], [Object], [Object] ]
+    signatures: [
+      [Object], [Object],
+      [Object], [Object],
+      [Object], [Object],
+      [Object], [Object],
+      [Object], [Object],
+      [Object], [Object],
+      [Object], [Object]
+    ]
   }
 }
-broadcast tx to terra chain:  15B910AE07912B25EE39037AE6BE60B6C382EF57FFDE7A035F38A116E6C7D737
-polling: 5
+broadcast tx to terra chain:  1BE367A5E3042A648382F53C05DCAD00A6BAD0E64C564CA7B5BAFCA703E5CA57
+polling: 1{
+  code: 3,
+  message: 'tx (1BE367A5E3042A648382F53C05DCAD00A6BAD0E64C564CA7B5BAFCA703E5CA57) not found: invalid request',
+  details: []
+}
+polling: 2{
+  code: 3,
+  message: 'tx (1BE367A5E3042A648382F53C05DCAD00A6BAD0E64C564CA7B5BAFCA703E5CA57) not found: invalid request',
+  details: []
+}
+polling: 3{
+  code: 3,
+  message: 'tx (1BE367A5E3042A648382F53C05DCAD00A6BAD0E64C564CA7B5BAFCA703E5CA57) not found: invalid request',
+  details: []
+}
+polling: 4
 
-latest saved result:  "{'name': {'ascii_first': 'Drew', 'ascii_last': 'Brees', 'first': 'Drew', 'full': 'Drew Brees', 'last': 'Brees'}}"
+latest saved result:  "[{'address': 'terra1wu25uuumx0nc6fk4fcaqk8mcx4dhnxwca56rc5', 'score': 97}, {'address': 'terra1fnvgss8vv8z84umlav0ey0smh97grkegxl9p5r', 'score': 80}, {'address': 'terra1l9drxzsmxrlspm73wurxnptsawyrn3s63k7qd4', 'score': 84}]"
 =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
 ```
