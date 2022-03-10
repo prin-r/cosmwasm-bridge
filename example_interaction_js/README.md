@@ -2,6 +2,13 @@
 
 This example show how to request yahoo's fantasy sport data from Band using `bandchain.js` and then submitted the data to a smart contract on Terra using `terra.js`.
 
+### Example deployed contracts on Bombay-12
+
+| Contract |      Are      |
+|----------|:-------------:|
+| Bridge   | [terra1l9drxzsmxrlspm73wurxnptsawyrn3s63k7qd4](https://finder.terra.money/testnet/address/terra1l9drxzsmxrlspm73wurxnptsawyrn3s63k7qd4) |
+| Consumer | [terra1y6t238vszfgsgsztxmzger3lya8e22fknfjcrd](https://finder.terra.money/testnet/address/terra1y6t238vszfgsgsztxmzger3lya8e22fknfjcrd) |
+
 ### Steps
 
 Please see [here](index.js#L193-L207)

@@ -7,7 +7,7 @@ pub struct FinalResult {
     pub value: String,
 }
 
-#[derive(Serialize, Deserialize, Clone, Debug, PartialEq, JsonSchema)]
+#[derive(Serialize, Deserialize, Clone, Default, Debug, PartialEq, JsonSchema, OBIDecode, OBIEncode)]
 pub struct Result {
     pub client_id: String,
     pub oracle_script_id: u64,

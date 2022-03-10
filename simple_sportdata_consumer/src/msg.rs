@@ -1,17 +1,17 @@
-use cosmwasm_std::HumanAddr;
+use cosmwasm_std::{Addr, CustomQuery};
 use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
 
 #[derive(Serialize, Deserialize, Clone, Debug, PartialEq, JsonSchema)]
-pub struct InitMsg {
-    pub initial_bridge: HumanAddr,
+pub struct InstantiateMsg {
+    pub initial_bridge: Addr,
 }
 
 #[derive(Serialize, Deserialize, Clone, Debug, PartialEq, JsonSchema)]
 #[serde(rename_all = "snake_case")]
-pub enum HandleMsg {
-    TransferOwnership { new_owner: HumanAddr },
-    SetBridge { new_bridge: HumanAddr },
+pub enum ExecuteMsg {
+    TransferOwnership { new_owner: Addr },
+    SetBridge { new_bridge: Addr },
     SaveVerifiedResult { request_id: u64 },
 }
 
@@ -25,3 +25,5 @@ pub enum QueryMsg {
     // Get result from bridge
     GetResult { request_id: u64 },
 }
+
+impl CustomQuery for QueryMsg {}
