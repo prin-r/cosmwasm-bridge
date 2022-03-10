@@ -4,7 +4,7 @@ This example show how to request yahoo's fantasy sport data from Band using `ban
 
 ### Example deployed contracts on Bombay-12
 
-| Contract |      Are      |
+| Contract |      Address      |
 |----------|:-------------:|
 | Bridge   | [terra1l9drxzsmxrlspm73wurxnptsawyrn3s63k7qd4](https://finder.terra.money/testnet/address/terra1l9drxzsmxrlspm73wurxnptsawyrn3s63k7qd4) |
 | Consumer | [terra1y6t238vszfgsgsztxmzger3lya8e22fknfjcrd](https://finder.terra.money/testnet/address/terra1y6t238vszfgsgsztxmzger3lya8e22fknfjcrd) |
