@@ -1,6 +1,6 @@
 # Cosmwasm Bridge Contract
 
-See the deployed os on the Bombay-12 testnet 👉 [terra1l9drxzsmxrlspm73wurxnptsawyrn3s63k7qd4](https://finder.terra.money/testnet/address/terra1l9drxzsmxrlspm73wurxnptsawyrn3s63k7qd4)
+See the deployed Bridge contract on the Bombay-12 testnet 👉 [terra1l9drxzsmxrlspm73wurxnptsawyrn3s63k7qd4](https://finder.terra.money/testnet/address/terra1l9drxzsmxrlspm73wurxnptsawyrn3s63k7qd4)
 
 ## Relay new block process
 ```
