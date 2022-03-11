@@ -9,6 +9,6 @@ You will need the five following components.
 4. Bridge contract on Terra chain (See more details here 👉 [bridge](/bridge))
 5. Consumer contract on Terra chain (See more details here 👉 [simple_consumer](/simple_consumer))
 
-### This is the overall image that demonstrate the flow of retrieving the verified data from Bandchain and then save to the Consumer's state.
+### This image below demonstrates the overall flow of retrieving the verified data from Bandchain and then saving it to the Consumer's state.
 
 ![img](https://user-images.githubusercontent.com/12705423/157852111-ac47874e-a13d-4fee-b449-75a63170951f.png)
