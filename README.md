@@ -11,4 +11,4 @@ You will need the five following components.
 
 ### This is the overall image that demonstrate the flow of retrieving the verified data from Bandchain and then save to the Consumer's state.
 
-![img](https://user-images.githubusercontent.com/12705423/157718539-38f5e1c9-1f19-4d3f-aeac-c4f161808cd1.png)
+![img](https://user-images.githubusercontent.com/12705423/157852111-ac47874e-a13d-4fee-b449-75a63170951f.png)
